@@ -93,6 +93,18 @@ def call_azure(client, system_prompt: str, user_prompt: str) -> str:
     return response.output_text
 
 
+def strip_markdown_json_fence(text: str) -> str:
+    """Gemini a veces envuelve el JSON en un bloque de código Markdown (```json ... ```)
+    incluso pidiendo response_mime_type=application/json. Lo quitamos aquí, aislado a la
+    llamada de Gemini, sin tocar los validate() de cada rol."""
+    t = text.strip()
+    if t.startswith("```"):
+        t = t.split("\n", 1)[1] if "\n" in t else t.removeprefix("```")
+        if t.rstrip().endswith("```"):
+            t = t.rstrip()[:-3]
+    return t.strip()
+
+
 def call_gemini(client, system_prompt: str, user_prompt: str) -> str:
     """Ejecuta una interacción Gemini con instrucción de sistema y salida JSON."""
     interaction = client.interactions.create(
@@ -104,7 +116,7 @@ def call_gemini(client, system_prompt: str, user_prompt: str) -> str:
             "response_mime_type": "application/json",
         },
     )
-    return interaction.output_text
+    return strip_markdown_json_fence(interaction.output_text)
 
 
 # --------------------------------------------------------------------------- comparación
