@@ -1,0 +1,80 @@
+=== rsi_max (sobrecompra) | NVDA | 2024-10-14 ===
+[1] problemas: ninguno
+    {
+  "role": "technical",
+  "signal": "bullish",
+  "score": 0.7,
+  "confidence": 0.85,
+  "rationale": "Price above SMA20/50, RSI at 70.45 near overbought, MACD positive with rising histogram, close near upper Bollinger band. Volume slightly below average suggests moderate buying strength. Overall momentum favors continuation but watch for short-term pullback risk."
+}
+[2] problemas: ninguno
+    {
+  "role": "technical",
+  "signal": "bullish",
+  "score": 0.7,
+  "confidence": 0.85,
+  "rationale": "Price above SMA20/50, RSI near 70, MACD positive with rising histogram, close near upper Bollinger band. Volume slightly below average but ATR indicates moderate volatility supporting upward momentum."
+}
+[3] problemas: ninguno
+    {
+  "role": "technical",
+  "signal": "bullish",
+  "score": 0.7,
+  "confidence": 0.85,
+  "rationale": "Price above SMA20/50, RSI near 70, MACD positive with rising histogram, close near upper Bollinger band suggests strong upward momentum despite slightly lower relative volume."
+}
+--> señales: {'bullish': 3} | score medio 0.70 (desv. 0.00)
+
+=== rsi_min (sobreventa) | NVDA | 2025-01-27 ===
+[1] problemas: ninguno
+    {
+  "role": "technical",
+  "signal": "bearish",
+  "score": -0.85,
+  "confidence": 0.9,
+  "rationale": "Price closed well below SMA20/50 and Bollinger lower band; RSI near oversold but not yet bullish; MACD negative with widening histogram; huge volume spike and relative volume 3.46 indicate strong selling pressure."
+}
+[2] problemas: ninguno
+    {
+  "role": "technical",
+  "signal": "bearish",
+  "score": -0.85,
+  "confidence": 0.9,
+  "rationale": "Price closed well below SMA20/50 and Bollinger lower band with heavy volume (3.46x avg). RSI near oversold but MACD bearish with negative histogram. ATR high, indicating volatility. Strong bearish momentum likely to continue short-term."
+}
+[3] problemas: ninguno
+    {
+  "role": "technical",
+  "signal": "bearish",
+  "score": -0.85,
+  "confidence": 0.9,
+  "rationale": "Price closed well below SMA20/50 and Bollinger lower band with heavy volume (3.46x avg). RSI near oversold but MACD negative with widening histogram. ATR high, indicating volatility. Strong bearish momentum likely to continue short-term."
+}
+--> señales: {'bearish': 3} | score medio -0.85 (desv. 0.00)
+
+=== lateral (Bollinger mas estrecho) | NVDA | 2024-11-05 ===
+[1] problemas: ninguno
+    {
+  "role": "technical",
+  "signal": "neutral",
+  "score": 0.1,
+  "confidence": 0.75,
+  "rationale": "Price above SMA20 and SMA50 indicates mild bullishness; RSI near 59 is neutral; MACD below signal with negative histogram suggests short-term weakness; price near Bollinger mid-band with moderate ATR and low relative volume implies limited momentum."
+}
+[2] problemas: ninguno
+    {
+  "role": "technical",
+  "signal": "neutral",
+  "score": 0.1,
+  "confidence": 0.75,
+  "rationale": "Price above SMA20 and SMA50 suggests mild bullishness; RSI near 59 is neutral; MACD histogram negative indicates weakening momentum; volume below average; Bollinger bands show price near mid-band with room tomove."
+}
+[3] problemas: ninguno
+    {
+  "role": "technical",
+  "signal": "neutral",
+  "score": 0.1,
+  "confidence": 0.75,
+  "rationale": "Price above SMA20 and SMA50 suggests mild bullishness; RSI near 59 is neutral; MACD histogram negative indicates short-term weakness; volume below average; price near mid Bollinger band signals consolidation."
+}
+--> señales: {'neutral': 3} | score medio 0.10 (desv. 0.00)

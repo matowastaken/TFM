@@ -1,0 +1,6 @@
+.env
+*.env
+venv-trading/
+.venv/
+__pycache__/
+*.pyc

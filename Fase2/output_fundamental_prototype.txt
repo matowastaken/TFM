@@ -1,0 +1,81 @@
+=== denso (mas noticias en ventana) | XOM | 2024-10-11 | 24 noticias, 5806 chars ===
+[1] problemas: ninguno
+    {
+  "role": "fundamental",
+  "signal": "bullish",
+  "score": 0.6,
+  "confidence": 0.75,
+  "rationale": "XOM hit an all-time high amid rising oil prices and strong positioning in the Permian Basin (2024-10-11). Despite bearish options activity (2024-10-09), ongoing exploration success and sector-wide strength in integrated oil majors support near-term upside."
+}
+[2] problemas: ninguno
+    {
+  "role": "fundamental",
+  "signal": "bullish",
+  "score": 0.6,
+  "confidence": 0.75,
+  "rationale": "XOM hit an all-time high amid rising oil prices and strong positioning in the Permian Basin (2024-10-11). Despite bearish options activity (2024-10-09), sector-wide refining margin pressure (Shell, 2024-10-10) is offset by robust upstream fundamentals and exploration progress (Crete JV, 2024-10-10)."
+}
+[3] problemas: ninguno
+    {
+  "role": "fundamental",
+  "signal": "bullish",
+  "score": 0.6,
+  "confidence": 0.8,
+  "rationale": "XOM hit an all-time high amid rising oil prices and strong positioning in the Permian Basin (2024-10-11). Despite bearish options activity (2024-10-09), sector-wide refining margin pressures (Shell, 2024-10-10) and uncertain macro factors, ExxonMobil's integrated strength and exploration progress support near-term upside."
+}
+--> señales: {'bullish': 3} | score medio 0.60 (desv. 0.00) | posibles fuera de foco: 0/3
+
+=== escaso (menos noticias en ventana) | XOM | 2024-09-22 | 4 noticias, 587 chars ===
+[1] problemas: ninguno
+    {
+  "role": "fundamental",
+  "signal": "neutral",
+  "score": 0.0,
+  "confidence": 0.4,
+  "rationale": "Recent news includes ONGC Videsh's gas deal in Azerbaijan, indicating stable energy sector activity, but no direct macro or geopolitical shifts impacting Exxon Mobil specifically. Other news items are unrelated to energy or macro factors affecting XOM."
+}
+[2] problemas: ninguno
+    {
+  "role": "fundamental",
+  "signal": "neutral",
+  "score": 0.0,
+  "confidence": 0.4,
+  "rationale": "Recent news includes ONGC Videsh's gas deal in Azerbaijan, indicating stable upstream activity but no direct impact on Exxon Mobil. Other items are unrelated to macro or geopolitical factors affecting XOM. No significant changes in oil markets or geopolitical tensions noted."
+}
+[3] problemas: ninguno
+    {
+  "role": "fundamental",
+  "signal": "neutral",
+  "score": 0.0,
+  "confidence": 0.6,
+  "rationale": "Recent news includes ONGC Videsh's gas deal in Azerbaijan, indicating stable energy sector activity, but no direct macro or geopolitical shifts impacting Exxon Mobil specifically. Other news items are unrelated to macro factors affecting XOM."
+}
+--> señales: {'neutral': 3} | score medio 0.00 (desv. 0.00) | posibles fuera de foco: 0/3
+
+=== intermedio (mediana) | XOM | 2024-10-20 | 14 noticias, 3863 chars ===
+[1] problemas: ninguno
+    {
+  "role": "fundamental",
+  "signal": "neutral",
+  "score": 0.0,
+  "confidence": 0.6,
+  "rationale": "Recent news shows sector dividend strength and energy diversification (10-20, 10-18), but bearish options activity on Exxon (10-18) and no major geopolitical or macro shifts affecting oil prices limit near-term directional bias."
+}
+[2] problemas: ninguno
+    {
+  "role": "fundamental",
+  "signal": "neutral",
+  "score": 0.0,
+  "confidence": 0.6,
+  "rationale": "Recent news highlights energy dividend strength and sector interest, but bearish options activity on Exxon and no major macro shifts limit near-term upside. Argentina's LNG push is positive but indirect for XOM. Overall, mixed signals suggest a neutral outlook."
+}
+    [aviso] rationale sin terminos macro reconocibles, revisar a mano
+[3] problemas: ninguno
+    {
+  "role": "fundamental",
+  "signal": "neutral",
+  "score": 0.0,
+  "confidence": 0.6,
+  "rationale": "Recent news shows sector dividend strength and energy infrastructure growth in Argentina under deregulation, but bearish options activity on Exxon suggests caution. No major macro shocks or geopolitical events directly impacting Exxon Mobil in the short term."
+}
+--> señales: {'neutral': 3} | score medio 0.00 (desv. 0.00) | posibles fuera de foco: 1/3
