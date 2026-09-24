@@ -1,0 +1,13 @@
+# Environment and dataset access
+python-dotenv
+huggingface-hub
+finsaber
+
+# LLM providers
+openai
+google-genai
+
+# Data processing and Parquet files
+numpy
+pandas
+pyarrow
