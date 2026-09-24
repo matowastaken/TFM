@@ -10,11 +10,9 @@ documentación de la decisión de asignación (Azure motor único de los 4 roles
 este contraste y como red de seguridad puntual — Fase 0.2). La lógica de reintentos/fallback
 automático NO es parte de esta fase: se implementa en el wrapper call_llm() de la Fase 3.2.
 
-⚠️ AVISO: la llamada a Gemini (call_gemini) replica por analogía la forma de la Responses API
-de Azure (model/instructions/input/temperature), pero los kwargs exactos de
-client.interactions.create() no están verificados aquí — contrástalos contra tu propia
-validación de la Fase 0.2 antes de confiar en el resultado. Si el SDK real usa otros nombres
-de parámetro, ajusta solo esa función; el resto del script no depende de ello.
+La llamada a Gemini usa los nombres propios de la Interactions API
+(system_instruction/input/generation_config), manteniendo la salida JSON para compararla con
+Azure.
 
 Usa prompts fijos autocontenidos (no recalculados desde FINSABER-2 ni desde news_items real),
 para poder ejecutarse sin dataset ni pipeline de datos, solo con las dos claves de API.
@@ -96,12 +94,15 @@ def call_azure(client, system_prompt: str, user_prompt: str) -> str:
 
 
 def call_gemini(client, system_prompt: str, user_prompt: str) -> str:
-    """⚠️ Kwargs sin verificar — ajustar contra la validación real de la Fase 0.2 si difieren."""
+    """Ejecuta una interacción Gemini con instrucción de sistema y salida JSON."""
     interaction = client.interactions.create(
         model=GEMINI_MODEL,
-        instructions=system_prompt,
+        system_instruction=system_prompt,
         input=user_prompt,
-        temperature=TEMPERATURE,
+        generation_config={
+            "temperature": TEMPERATURE,
+            "response_mime_type": "application/json",
+        },
     )
     return interaction.output_text
 

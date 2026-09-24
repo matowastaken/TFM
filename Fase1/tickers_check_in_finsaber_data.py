@@ -1,7 +1,9 @@
 import pandas as pd
 import os
+from dotenv import load_dotenv
 
-DATA_PATH = r"C:\finsaber-data"
+load_dotenv()
+DATA_PATH = os.environ["FINSABER_DATA_PATH"]
 
 # 1. Cargar precios de 2024 y 2025 (si existe) para ver símbolos disponibles post-cutoff
 price_2024 = pd.read_parquet(os.path.join(DATA_PATH, "price_daily", "year=2024", "part-000.parquet"))
