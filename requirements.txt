@@ -11,3 +11,6 @@ google-genai
 numpy
 pandas
 pyarrow
+
+pyyaml      # para config/ablation.yaml (3.4)
+pytest      # para tests/ (3.3)

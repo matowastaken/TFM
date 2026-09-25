@@ -4,3 +4,6 @@ venv-trading/
 .venv/
 __pycache__/
 *.pyc
+.pytest_cache/
+results/
+.vscode/
