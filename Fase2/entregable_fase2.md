@@ -1,4 +1,4 @@
-# Ficha de diseño de roles — Fase 2 [EN CURSO]
+# Ficha de diseño de roles — Fase 2 [CERRADA]
 *(borrador para Capítulo 4 — Marco Metodológico, y para anexo técnico de prompts)*
 
 ## Esquema de salida común a los tres analistas
@@ -28,7 +28,7 @@
 
 ---
 
-## 2.2 Analista de sentimiento [EN DISEÑO]
+## 2.2 Analista de sentimiento [CERRADO]
 
 - **Fuente de datos:** `news_items` filtrado por `symbol == ticker`, compartida con el rol macro/geopolítico (decisión de Fase 1.5). La diferenciación entre ambos roles está en la tarea del prompt, no en el input.
 - **Ventana temporal:** últimos 3 días naturales hasta `date` inclusive. Se eligió corta porque el foco es la percepción de mercado reciente, no eventos ya descontados.
@@ -74,7 +74,7 @@ Return JSON with keys:
 
 ---
 
-## 2.3 Analista fundamental macro/geopolítico [EN DISEÑO]
+## 2.3 Analista fundamental macro/geopolítico [CERRADO]
 
 - **Fuente de datos — verificado en código fuente y ficha del dataset:** `news_items` (columnas `date, symbol, cik, item_index, news_text, text_len, text_crc32, year`) no admite noticias sin ticker asociado; `symbol` es obligatorio en el filtro del loader (`FinsaberParquetDataset._read_news`) y cada fila lleva `cik`, el identificador de la SEC para una compañía concreta. Se descarta por tanto la opción de un pool de noticias macro "sin ticker" independiente del rol de sentimiento: **todo el contenido de `news_items` está indexado por compañía**.
 - **Decisión de diseño:** el rol fundamental usa el mismo pool de `news_items` filtrado por ticker que el rol de sentimiento (misma ventana de 3 días, mismo presupuesto de 6.000 caracteres), diferenciándose únicamente por la tarea del prompt: se le indica explícitamente ignorar noticias específicas de la compañía sin dimensión macro/geopolítica (lanzamientos de producto, resultados sin contexto más amplio) y centrarse en tipos de interés, inflación, política monetaria, elecciones, geopolítica o condiciones sectoriales/de materias primas.
@@ -186,8 +186,10 @@ Return JSON with keys:
 - **Alcance (según cronograma):** solo contraste de formato/calidad entre Azure (`gpt-4.1-mini`, Responses API) y Gemini (`gemini-3.5-flash-lite`, Interactions API) sobre los 4 prompts ya cerrados, y documentación de la decisión de asignación. La lógica de reintentos/fallback automático **no** es parte de esta fase — se implementa en el wrapper `call_llm()` de la Fase 3.2.
 - **Prompts fijos autocontenidos:** cada rol se prueba con un input fijo (no recalculado desde FINSABER-2 ni desde `news_items` real), para poder ejecutar el contraste solo con las dos claves de API, sin depender del dataset ni del pipeline de datos.
 - **Comparación cualitativa simple:** además de validar formato en ambos proveedores por separado (reutilizando el `validate()` de cada rol), se compara si la etiqueta categórica (`signal` en los analistas, `action` en el trader) coincide entre Azure y Gemini para el mismo input — una discrepancia no es en sí un error, pero es la señal a revisar si aparece de forma sistemática.
-- **Firma de `client.interactions.create()` confirmada empíricamente (ejecución real, 24-sep-2026):** el SDK solo acepta `model`/`input` como kwargs nativos; `instructions` y `temperature` deben pasarse dentro de `extra_body`. Se detectó al ejecutar el prototipo por primera vez: el propio error de la API (`"Use extra_body=... to send additional request body fields"`) indicó la corrección exacta. Este hallazgo es relevante también para la Fase 3.2 (`call_llm()`), que reutilizará esta misma forma de llamada a Gemini.
+- **Ejecución real confirmada (24-sep-2026):** 8 llamadas por proveedor (4 roles × 2 repeticiones) sobre los mismos inputs fijos. Las 16 respuestas de Gemini parsean sin problemas tras `strip_markdown_json_fence()`; la etiqueta categórica (`signal`/`action`) coincide con Azure en el 100% de los casos, con diferencias razonables de magnitud (p. ej. técnico: 0.75 Azure vs. 0.80 Gemini; trader: `size` más conservador en Gemini, 0.2-0.3 vs. 0.4 de Azure, con justificación explícita del porqué). Confirma que Gemini es una red de seguridad viable si Azure fallara.
 - **Confirmación de la decisión de asignación (Fase 0.2):** Azure sigue siendo el motor único de los 4 roles en producción; Gemini se usa exclusivamente para este contraste de formato y como red de seguridad puntual ante fallos de Azure (Fase 3.2), nunca como motor de ningún rol, por la fragilidad observada del tier gratuito.
+- **Firma de `client.interactions.create()` (versión final, confirmada por ejecución real, 24-sep-2026):** `model`, `system_instruction`, `input`, y `generation_config={"temperature": ..., "response_mime_type": "application/json"}`. Relevante también para la Fase 3.2 (`call_llm()`), que reutilizará esta misma forma de llamada a Gemini.
+- **`response_mime_type` no elimina el fence de Markdown de forma fiable:** aun pidiendo `application/json`, Gemini seguía envolviendo la respuesta en ```` ```json ... ``` ````. Se añadió `strip_markdown_json_fence()`, aislado dentro de `call_gemini()`, que limpia el fence antes de pasar el texto a `json.loads()`. No se intentó forzar el parámetro correcto porque el post-proceso es más robusto que depender de que el modelo obedezca la instrucción de formato.
 - **Script:** `cross_validation_prototype.py`. Importa los prompts/validadores ya cerrados de `technical_prototype.py`, `sentiment_prototype.py`, `fundamental_prototype.py` y `trader_prototype.py` (deben estar en la misma carpeta); si Gemini no está disponible o falla la inicialización del cliente, continúa ejecutando solo Azure con un aviso, en vez de detenerse.
 
 **Entregable Fase 2 — completo:** especificación final de los 4 prompts (técnico, sentimiento, fundamental, trader), con decisiones de diseño documentadas, scripts de prototipo para cada rol y su validación cruzada de formato entre proveedores.
