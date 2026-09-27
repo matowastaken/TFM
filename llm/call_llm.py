@@ -31,16 +31,31 @@ import time
 
 from openai import OpenAI, APITimeoutError, RateLimitError
 
-from backtest.toolkit.llm_cost_monitor import (
-    OPENAI_PRICE,
-    add_openai_cost_from_response,
-)
+import backtest.toolkit.llm_cost_monitor as _cost_monitor
+from backtest.toolkit.llm_cost_monitor import add_openai_cost_from_response
 
 logger = logging.getLogger(__name__)
 
-# --- Parche obligatorio (hallazgo Fase 0.4) ---
+# --- Parche obligatorio (hallazgo Fase 0.4, corregido en Fase 3.5) ---
 # Precio confirmado (Fase 3.2): Azure AI Foundry, Global Standard.
-OPENAI_PRICE["gpt-4.1-mini"] = {"input": 0.40, "output": 1.60}
+_cost_monitor.OPENAI_PRICE["gpt-4.1-mini"] = {"input": 0.40, "output": 1.60}
+
+# El hallazgo original de Fase 0.4 ("OPENAI_PRICE no incluye gpt-4.1-mini")
+# estaba incompleto: _openai_cost() en el paquete real (backtest.toolkit.
+# llm_cost_monitor, instalado vía finsaber==2.0.1) NO busca el modelo en
+# OPENAI_PRICE por clave -- comprueba subcadenas literales hardcodeadas
+# ("gpt-4o-mini", "gpt-4o"), y "gpt-4.1-mini" no coincide con ninguna.
+# Verificado en vivo (Fase 3.5): con solo el parche de OPENAI_PRICE, el
+# coste se registraba igualmente como 0.0. Se reemplaza _openai_cost por
+# una versión que sí busca por clave exacta en OPENAI_PRICE.
+def _patched_openai_cost(model: str, prompt_tokens: int, completion_tokens: int) -> float:
+    price = _cost_monitor.OPENAI_PRICE.get(model)
+    if price is None:
+        return 0.0
+    return (prompt_tokens * price["input"] + completion_tokens * price["output"]) / 1_000_000
+
+
+_cost_monitor._openai_cost = _patched_openai_cost
 
 AZURE_MODEL = "gpt-4.1-mini"
 MAX_RETRIES = 3

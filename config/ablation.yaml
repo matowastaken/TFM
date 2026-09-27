@@ -1,0 +1,22 @@
+# config/ablation.yaml
+#
+# Las 5 configuraciones de ablación (Fase 1.3), con el nombrado final
+# (Fase 3, cherry_pick_no_macro -> cherry_pick_no_fundamental) y el
+# prefijo cherry_pick_ obligatorio para activar la persistencia nativa de
+# resultados de FINSABER-2 (hallazgo Fase 0.3).
+
+configurations:
+  - setup_name: cherry_pick_full_system
+    active_roles: [technical, sentiment, fundamental]
+
+  - setup_name: cherry_pick_no_technical
+    active_roles: [sentiment, fundamental]
+
+  - setup_name: cherry_pick_no_sentiment
+    active_roles: [technical, fundamental]
+
+  - setup_name: cherry_pick_no_fundamental
+    active_roles: [technical, sentiment]
+
+  - setup_name: cherry_pick_baseline_price_only
+    active_roles: []
