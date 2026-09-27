@@ -37,8 +37,7 @@
   - `news_items`: **solo 2009-2025** (restricción clave para la Fase 1.2: el periodo de test debe estar dentro de este rango).
   - `filingk` / `filingq` (10-K anual / 10-Q trimestral): 2000-2025.
 - Quick Start ejecutado con éxito (`total_return = 0.00443` sobre AAPL, Buy-and-Hold, 2024-01-02 a 2024-01-10).
-- **⚠️ Hallazgo importante sobre persistencia de resultados**: `run_iterative_tickers()` (método usado en agentes Python-nativos) solo invoca `write_result_artifacts()` si `setup_name` contiene la cadena `"cherry_pick"` (particularidad interna ligada a los experimentos del paper original, no documentada).
-  - **Decisión de diseño**: en vez de modificar el código fuente del framework, todos los `setup_name` de la Fase 1.3 llevarán el prefijo **`cherry_pick_`** (ej. `cherry_pick_full_system`, `cherry_pick_no_technical`, etc.) para activar la persistencia nativa. Documentar esta convención explícitamente en el Capítulo 4.
+- **Persistencia de resultados**: `run_iterative_tickers()` invoca `write_result_artifacts()` siempre que `save_results=True` (valor por defecto), sin depender del nombre del `setup_name`. (Nota: el check por subcadena `"cherry_pick"` existe únicamente en el motor `FINSABERBt`, no usado en este proyecto — confirmado contra el código fuente en Fase 3.6.)
   - Ruta de artefactos: `log_base_dir/setup_name/strategy_name/date_from_date_to/ticker/`, con `equity_curve.csv`, `metrics.json`, `orders.csv`, `trades.csv`, `rejected_orders.csv`, `llm_costs.csv`.
   - `log_base_dir` por defecto apunta dentro de `site-packages` del venv — **no ideal**; especificar explícitamente una ruta propia (ej. `C:\finsaber-data\results\`) en la Fase 3.
 
@@ -60,7 +59,7 @@
     ```
   - El monitor solo soporta `provider="openai"` — el coste de las llamadas a Gemini (fallback) no se registra automáticamente; si se desea trazabilidad completa, implementar conteo manual para esas llamadas puntuales.
 
-**Entregable Fase 0 (completado):** documento de viabilidad confirmando acceso funcional a Azure AI Foundry, Gemini, y FINSABER-2; cobertura de datos verificada; interfaz de estrategia y mecanismo de coste LLM entendidos a nivel de código fuente, con 2 hallazgos críticos documentados (convención `cherry_pick_` y parche de precios) que condicionan el diseño de las Fases 1 y 3.
+**Entregable Fase 0 (completado):** documento de viabilidad confirmando acceso funcional a Azure AI Foundry, Gemini, y FINSABER-2; cobertura de datos verificada; interfaz de estrategia y mecanismo de coste LLM entendidos a nivel de código fuente, con 2 hallazgos críticos documentados (parche de precios) que condicionan el diseño de las Fases 1 y 3.
 
 ---
 
@@ -83,12 +82,12 @@
 4. Sin analista fundamental macro/geopolítico.
 5. Baseline: solo trader con precio crudo (sin analistas).
 
-**Convención de nombrado obligatoria** (por el hallazgo de la Fase 0.3): todos los `setup_name` deben llevar el prefijo `cherry_pick_` para activar la persistencia nativa de resultados de FINSABER-2, ej.:
-- `cherry_pick_full_system`
-- `cherry_pick_no_technical`
-- `cherry_pick_no_sentiment`
-- `cherry_pick_no_macro`
-- `cherry_pick_baseline_price_only`
+**Nombrado de las configuraciones** (`setup_name`):
+- `full_system`
+- `no_technical`
+- `no_sentiment`
+- `no_fundamental`
+- `baseline_price_only`
 
 ### 1.4 Definir métricas de evaluación
 - Retorno total y anualizado, Sharpe, Max Drawdown, Calmar, nº de operaciones, y coste total de LLM por configuración (usando el monitor de coste ya parcheado en Fase 0.4).
@@ -224,7 +223,6 @@
 - Volcar la ficha de diseño experimental (Fase 1) en las secciones correspondientes: población/muestra (tickers y periodo), objetivos de investigación, variables e instrumentos (los 4 roles y sus prompts, resumidos), diseño experimental (las 5 configuraciones), modelo de análisis de datos (métricas y comparación).
 - Documentar explícitamente las decisiones de infraestructura surgidas en la Fase 0, relevantes para la reproducibilidad:
   - Uso de Azure AI Foundry (`gpt-4.1-mini`) como motor único de los 4 roles, con Gemini (`gemini-3.5-flash-lite`) como mecanismo de fallback y validación cruzada — justificar por estabilidad de cuota frente a la fragilidad observada del tier gratuito de Gemini.
-  - Convención de nombrado `cherry_pick_` en los `setup_name`, motivada por una particularidad no documentada de la persistencia de resultados en FINSABER-2 (`run_iterative_tickers`), y la decisión de no modificar el código fuente del framework.
   - Parche aplicado a `OPENAI_PRICE` en el monitor de coste de FINSABER-2 para soportar `gpt-4.1-mini`.
 
 ### 6.2 Capítulo 5 — Resultados y discusión

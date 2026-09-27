@@ -6,12 +6,12 @@ Orquestador de configuración (Fase 3.4). Dado un conjunto de roles activos
 analistas y pasa sus outputs al trader.
 
 Decisión clave (confirmada en Fase 3.4): si un analista activo falla
-(agente devuelve None -- ver Fase 3.2/3.3), todo el día/ticker se marca
+(agente devuelve None -- ver Fase 3.2/3.3), TODO el día/ticker se marca
 como fallido en esa configuración. El trader NO se llama con un
 subconjunto parcial de informes: hacerlo contaminaría la comparación de
 ablación, ya que un día con un fallo técnico del analista técnico se
 volvería indistinguible, a nivel de input del trader, de un día normal en
-`cherry_pick_no_technical`.
+`no_technical`.
 """
 
 from __future__ import annotations

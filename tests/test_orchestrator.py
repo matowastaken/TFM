@@ -51,7 +51,7 @@ def test_full_system_calls_all_three_and_trader(monkeypatch, dummy_args):
     monkeypatch.setattr(orchestrator.trader_agent, "run", lambda *a, **kw: _valid_trader_response())
 
     result = orchestrator.run_configuration(
-        "cherry_pick_full_system", ["technical", "sentiment", "fundamental"], **dummy_args
+        "full_system", ["technical", "sentiment", "fundamental"], **dummy_args
     )
     assert result.status == "ok"
     assert len(result.analyst_reports) == 3
@@ -61,7 +61,7 @@ def test_full_system_calls_all_three_and_trader(monkeypatch, dummy_args):
 def test_baseline_no_analysts_still_calls_trader(monkeypatch, dummy_args):
     monkeypatch.setattr(orchestrator.trader_agent, "run", lambda *a, **kw: _valid_trader_response())
     result = orchestrator.run_configuration(
-        "cherry_pick_baseline_price_only", [], **dummy_args
+        "baseline_price_only", [], **dummy_args
     )
     assert result.status == "ok"
     assert result.analyst_reports == []
@@ -81,7 +81,7 @@ def test_analyst_failure_marks_whole_day_failed_without_calling_trader(monkeypat
     monkeypatch.setattr(orchestrator.trader_agent, "run", fake_trader_run)
 
     result = orchestrator.run_configuration(
-        "cherry_pick_full_system", ["technical", "sentiment", "fundamental"], **dummy_args
+        "full_system", ["technical", "sentiment", "fundamental"], **dummy_args
     )
     assert result.status == "failed"
     assert result.failed_role == "sentiment"
@@ -96,7 +96,7 @@ def test_trader_failure_marks_failed_with_reports_kept(monkeypatch, dummy_args):
     monkeypatch.setattr(orchestrator.trader_agent, "run", lambda *a, **kw: None)  # falla
 
     result = orchestrator.run_configuration(
-        "cherry_pick_no_sentiment", ["technical"], **dummy_args
+        "no_sentiment", ["technical"], **dummy_args
     )
     assert result.status == "failed"
     assert result.failed_role == "trader"
@@ -106,7 +106,7 @@ def test_trader_failure_marks_failed_with_reports_kept(monkeypatch, dummy_args):
 def test_load_ablation_config_returns_five_configurations():
     config = orchestrator.load_ablation_config()
     assert len(config) == 5
-    assert config["cherry_pick_full_system"] == ["technical", "sentiment", "fundamental"]
-    assert config["cherry_pick_baseline_price_only"] == []
-    assert "cherry_pick_no_fundamental" in config
-    assert "cherry_pick_no_macro" not in config  # renombrado en Fase 3
+    assert config["full_system"] == ["technical", "sentiment", "fundamental"]
+    assert config["baseline_price_only"] == []
+    assert "no_fundamental" in config
+    assert "no_macro" not in config  # renombrado en Fase 3

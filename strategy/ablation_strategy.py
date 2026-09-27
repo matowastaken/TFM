@@ -62,8 +62,8 @@ MIN_OHLCV_HISTORY_FOR_TECHNICAL = 50  # SMA50/ATR14 (Fase 2.1)
 class AblationStrategy(BaseStrategyIso):
     """
     Una instancia por (setup_name, ticker). setup_name identifica la
-    configuración de ablación (Fase 1.3/3.4, con el prefijo cherry_pick_
-    para activar la persistencia nativa de resultados -- hallazgo Fase 0.3).
+    configuración de ablación (Fase 1.3/3.4): full_system, no_technical,
+    no_sentiment, no_fundamental, baseline_price_only.
     """
 
     def __init__(
@@ -124,6 +124,12 @@ class AblationStrategy(BaseStrategyIso):
     ) -> None:
         action = trader_output["action"]
         size = trader_output["size"]
+
+        logger.info(
+            "%s/%s %s: trader decide %s (size=%.2f, confidence=%.2f) -- %s",
+            self.setup_name, self.ticker, date.date(), action, size,
+            trader_output.get("confidence", float("nan")), trader_output.get("rationale", ""),
+        )
 
         if action == "buy":
             quantity = int(size * framework.cash / price)

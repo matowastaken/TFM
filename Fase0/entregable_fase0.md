@@ -42,14 +42,11 @@
 - [x] Instalación correcta: Sí
 - [x] Quick Start ejecutado con éxito: Sí (total_return = 0.00443)
 - [x] Persistencia de resultados confirmada y entendida:
-  - Solo se activa si setup_name contiene "cherry_pick" (particularidad de run_iterative_tickers)
+  - Se activa siempre que save_results=True (valor por defecto), sin depender del nombre del setup_name
   - Ruta: log_base_dir/setup_name/strategy_name/date_from_date_to/ticker/
-  - Artefactos generados: equity_curve.csv, metrics.json, orders.csv (+ trades.csv, 
+  - Artefactos generados: equity_curve.csv, metrics.json, orders.csv (+ trades.csv,
     rejected_orders.csv, llm_costs.csv cuando aplique)
   - log_base_dir por defecto: dentro de site-packages del venv (no ideal)
-- Convención de nombrado: todos los setup_name de la Fase 1.3 llevarán el prefijo 
-  "cherry_pick_" para activar la persistencia nativa de resultados de FINSABER-2, 
-  evitando modificar el código fuente del framework. Documentar en Capítulo 4.
 
 ---
 

@@ -36,11 +36,11 @@
 
 | # | Configuración | `setup_name` | Roles activos |
 |---|---|---|---|
-| 1 | Sistema completo | `cherry_pick_full_system` | Técnico + Sentimiento + Macro + Trader |
-| 2 | Sin técnico | `cherry_pick_no_technical` | Sentimiento + Macro + Trader |
-| 3 | Sin sentimiento | `cherry_pick_no_sentiment` | Técnico + Macro + Trader |
-| 4 | Sin macro | `cherry_pick_no_macro` | Técnico + Sentimiento + Trader |
-| 5 | Baseline (trader-only) | `cherry_pick_baseline_price_only` | Solo Trader |
+| 1 | Sistema completo | `full_system` | Técnico + Sentimiento + Fundamental + Trader |
+| 2 | Sin técnico | `no_technical` | Sentimiento + Fundamental + Trader |
+| 3 | Sin sentimiento | `no_sentiment` | Técnico + Fundamental + Trader |
+| 4 | Sin fundamental | `no_fundamental` | Técnico + Sentimiento + Trader |
+| 5 | Baseline (trader-only) | `baseline_price_only` | Solo Trader |
 
 **Gestión de posición:** backtest independiente por ticker, capital inicial propio, sin pool de cash compartido — evita confundir interacción de cartera con la señal de ablación por rol. **20 backtests totales** (5 configuraciones × 4 tickers).
 
@@ -56,7 +56,7 @@
 
 **Agregación:** promedio entre los 4 tickers por configuración (comparación global) + desglose por ticker (detección de dependencia de perfil de activo).
 
-**Delta frente a `cherry_pick_full_system`:** diferencia porcentual para métricas de retorno; diferencia absoluta para ratios, drawdown y nº de operaciones.
+**Delta frente a `full_system`:** diferencia porcentual para métricas de retorno; diferencia absoluta para ratios, drawdown y nº de operaciones.
 
 **Benchmark externo:** buy-and-hold por ticker, contexto en Fase 5, excluido del cálculo de deltas.
 
