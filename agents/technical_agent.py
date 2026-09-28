@@ -9,10 +9,14 @@ los indicadores del día `date`.
 
 from __future__ import annotations
 
+import logging
+
 import pandas as pd
 
 from agents._common import validate_analyst_output
 from llm.call_llm import call_llm
+
+logger = logging.getLogger(__name__)
 
 ROLE = "technical"
 
@@ -147,6 +151,9 @@ def run(date: pd.Timestamp, ticker: str, ohlcv_history: pd.DataFrame) -> dict | 
         return None
 
     if not validate_analyst_output(output, ROLE):
+        # La respuesta llegó (HTTP 200, JSON válido) pero no cumple el esquema:
+        # se descarta igual que antes, pero se deja rastro para el QA (Fase 4.2).
+        logger.warning("analista técnico: respuesta descartada por no validar el esquema: %r", output)
         return None
 
     return output

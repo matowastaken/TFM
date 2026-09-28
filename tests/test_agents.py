@@ -200,3 +200,29 @@ def test_trader_agent_sell_without_position_still_reaches_llm(monkeypatch):
     )
     assert result is not None
     assert result["action"] == "sell"
+
+
+def test_trader_agent_hold_without_size_is_valid_and_normalized(monkeypatch):
+    # Caso real observado en la Fase 3.6: el modelo omite `size` en un hold.
+    monkeypatch.setattr(
+        trader_agent,
+        "call_llm",
+        lambda *a, **kw: {"action": "hold", "confidence": 0.8, "rationale": "x"},
+    )
+    result = trader_agent.run(
+        pd.Timestamp("2024-08-05"), "NVDA", "no position (all cash)", []
+    )
+    assert result is not None
+    assert result["size"] == 0.0
+
+
+def test_trader_agent_buy_without_size_is_still_rejected(monkeypatch):
+    monkeypatch.setattr(
+        trader_agent,
+        "call_llm",
+        lambda *a, **kw: {"action": "buy", "confidence": 0.8, "rationale": "x"},
+    )
+    result = trader_agent.run(
+        pd.Timestamp("2024-08-05"), "NVDA", "no position (all cash)", []
+    )
+    assert result is None

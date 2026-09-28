@@ -11,10 +11,14 @@ acciones.
 
 from __future__ import annotations
 
+import logging
+
 import pandas as pd
 
 from agents._common import validate_trader_output
 from llm.call_llm import call_llm
+
+logger = logging.getLogger(__name__)
 
 NO_REPORTS_PLACEHOLDER = "(no analyst reports available — decide based on current position only)"
 
@@ -93,7 +97,18 @@ def run(
     if output is None:
         return None
 
+    # El prompt dice que `size` se ignora si la acción es hold, y el modelo a
+    # veces omite la clave en ese caso (visto en el smoke test de la Fase 3.6:
+    # 3 de 6 días descartados por esto). Un hold sin `size` es una respuesta
+    # válida: se normaliza a 0.0 antes de validar. Para buy/sell `size` sigue
+    # siendo obligatorio.
+    if isinstance(output, dict) and output.get("action") == "hold" and output.get("size") is None:
+        output["size"] = 0.0
+
     if not validate_trader_output(output):
+        # La respuesta llegó (HTTP 200, JSON válido) pero no cumple el esquema:
+        # se descarta igual que antes, pero se deja rastro para el QA (Fase 4.2).
+        logger.warning("trader: respuesta descartada por no validar el esquema: %r", output)
         return None
 
     return output

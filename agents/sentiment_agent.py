@@ -8,10 +8,14 @@ ticker, ventana de 3 días naturales, presupuesto de 6.000 caracteres
 
 from __future__ import annotations
 
+import logging
+
 import pandas as pd
 
 from agents._common import format_news_block, select_news, validate_analyst_output
 from llm.call_llm import call_llm
+
+logger = logging.getLogger(__name__)
 
 ROLE = "sentiment"
 
@@ -67,6 +71,9 @@ def run(date: pd.Timestamp, ticker: str, news_items: pd.DataFrame) -> dict | Non
         return None
 
     if not validate_analyst_output(output, ROLE):
+        # La respuesta llegó (HTTP 200, JSON válido) pero no cumple el esquema:
+        # se descarta igual que antes, pero se deja rastro para el QA (Fase 4.2).
+        logger.warning("analista de sentimiento: respuesta descartada por no validar el esquema: %r", output)
         return None
 
     return output
