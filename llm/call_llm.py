@@ -14,25 +14,34 @@ areas/fase3-implementacion.md):
   - Ante fallo persistente de Azure (tras MAX_RETRIES intentos), call_llm()
     NO lanza una excepción que detenga todo el backtest: loguea el error y
     devuelve None. El día/ticker correspondiente queda marcado como
-    fallido, para revisión en el control de calidad de la Fase 4.2. Esto
-    evita que un fallo generalizado (p. ej. una caída prolongada del
-    endpoint) dispare reintentos en cascada sobre todo el histórico y
-    consuma tokens de forma descontrolada.
+    fallido (Fase 4.1: la estrategia lo convierte en DayFailure y el
+    runner reintenta con replay).
   - Bug conocido (Fase 0.4): el diccionario OPENAI_PRICE del monitor de
     coste de FINSABER-2 no incluye gpt-4.1-mini. Se parchea al importar
     este módulo, antes de que cualquier llamada pueda registrarse con
     coste 0.0.
+
+Fase 4.1 -- log de llamadas:
+  configure_call_log(path) activa un JSONL con una línea por respuesta
+  recibida de Azure (incluidas las que luego fallan al parsear JSON, que
+  también cuestan tokens): tokens, coste y el contexto fijado por la
+  estrategia con set_call_context() (setup, ticker, fecha, intento). El
+  coste total del experimento se suma desde este fichero, no desde el
+  contador en memoria, que se pierde al reiniciar un backtest. El campo
+  system_head (primeros caracteres del prompt de sistema) permite
+  distinguir el rol.
 """
 
 import json
 import logging
 import os
 import time
+from pathlib import Path
 
 from openai import OpenAI, APITimeoutError, RateLimitError
 
 import backtest.toolkit.llm_cost_monitor as _cost_monitor
-from backtest.toolkit.llm_cost_monitor import add_openai_cost_from_response
+from backtest.toolkit.llm_cost_monitor import add_llm_cost
 
 logger = logging.getLogger(__name__)
 
@@ -40,14 +49,11 @@ logger = logging.getLogger(__name__)
 # Precio confirmado (Fase 3.2): Azure AI Foundry, Global Standard.
 _cost_monitor.OPENAI_PRICE["gpt-4.1-mini"] = {"input": 0.40, "output": 1.60}
 
-# El hallazgo original de Fase 0.4 ("OPENAI_PRICE no incluye gpt-4.1-mini")
-# estaba incompleto: _openai_cost() en el paquete real (backtest.toolkit.
-# llm_cost_monitor, instalado vía finsaber==2.0.1) NO busca el modelo en
-# OPENAI_PRICE por clave -- comprueba subcadenas literales hardcodeadas
-# ("gpt-4o-mini", "gpt-4o"), y "gpt-4.1-mini" no coincide con ninguna.
-# Verificado en vivo (Fase 3.5): con solo el parche de OPENAI_PRICE, el
-# coste se registraba igualmente como 0.0. Se reemplaza _openai_cost por
-# una versión que sí busca por clave exacta en OPENAI_PRICE.
+# _openai_cost() del paquete real (finsaber==2.0.1) comprueba subcadenas
+# literales ("gpt-4o-mini", "gpt-4o") en vez de buscar por clave en
+# OPENAI_PRICE, y "gpt-4.1-mini" no coincide con ninguna: con solo el
+# parche de OPENAI_PRICE el coste seguía siendo 0.0 (verificado en vivo,
+# Fase 3.5). Se reemplaza por una versión que busca por clave exacta.
 def _patched_openai_cost(model: str, prompt_tokens: int, completion_tokens: int) -> float:
     price = _cost_monitor.OPENAI_PRICE.get(model)
     if price is None:
@@ -65,6 +71,73 @@ _client = OpenAI(
     base_url=os.environ["AZURE_OPENAI_ENDPOINT"],
     api_key=os.environ["AZURE_OPENAI_KEY"],
 )
+
+# --- Log de llamadas (Fase 4.1) ---
+_call_log_path: Path | None = None
+_call_context: dict = {}
+
+
+def configure_call_log(path) -> None:
+    """Activa el log JSONL de llamadas (una línea por respuesta de Azure)."""
+    global _call_log_path
+    _call_log_path = Path(path)
+    _call_log_path.parent.mkdir(parents=True, exist_ok=True)
+
+
+def set_call_context(**context) -> None:
+    """Fija el contexto (setup, ticker, date, attempt) que se añade a cada línea del log."""
+    _call_context.clear()
+    _call_context.update(context)
+
+
+def _usage_tokens(response) -> tuple[int, int]:
+    """(input_tokens, output_tokens) de una respuesta de la Responses API."""
+    usage = getattr(response, "usage", None)
+    return (
+        getattr(usage, "input_tokens", 0) or 0,
+        getattr(usage, "output_tokens", 0) or 0,
+    )
+
+
+def _record_cost(response) -> None:
+    """
+    Registra el coste en el monitor de FINSABER (metrics.json).
+
+    add_openai_cost_from_response() NO sirve con la Responses API: lee
+    usage.prompt_tokens (nombre de la Chat Completions API), que aquí no
+    existe (es input_tokens), así que el coste de entrada se contaba como
+    0 y solo se registraba el de salida (verificado en Fase 4.1 contra
+    calls.jsonl: 4.4x de infraestimación). Se llama a add_llm_cost() con
+    los tokens correctos y el modelo fijado a AZURE_MODEL, para que el
+    precio se busque por clave exacta y no dependa del nombre versionado
+    que devuelva la API.
+    """
+    prompt_tokens, completion_tokens = _usage_tokens(response)
+    add_llm_cost(
+        model=AZURE_MODEL,
+        prompt_tokens=prompt_tokens,
+        completion_tokens=completion_tokens,
+        provider="openai",
+    )
+
+
+def _log_call(response, system: str) -> None:
+    if _call_log_path is None:
+        return
+    try:
+        prompt_tokens, completion_tokens = _usage_tokens(response)
+        record = {
+            **_call_context,
+            "system_head": system[:60],
+            "prompt_tokens": prompt_tokens,
+            "completion_tokens": completion_tokens,
+            "cost": _patched_openai_cost(AZURE_MODEL, prompt_tokens, completion_tokens),
+        }
+        with open(_call_log_path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(record, ensure_ascii=False) + "\n")
+            f.flush()
+    except Exception as e:  # el log nunca debe romper una llamada
+        logger.warning("call_llm: no se pudo escribir el log de llamadas (%s)", e)
 
 
 def strip_markdown_json_fence(text: str) -> str:
@@ -103,7 +176,8 @@ def call_llm(system: str, user: str, temperature: float = 0.2) -> dict | None:
                 ],
                 temperature=temperature,
             )
-            add_openai_cost_from_response(response)
+            _record_cost(response)
+            _log_call(response, system)
             return json.loads(strip_markdown_json_fence(response.output_text))
 
         except (RateLimitError, APITimeoutError, json.JSONDecodeError) as e:

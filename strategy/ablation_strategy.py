@@ -23,40 +23,100 @@ areas/fase3-implementacion.md):
     20 backtests = 5 configuraciones x 4 tickers, capital independiente
     por ticker). Aunque today_data pueda venir organizado por varios
     tickers, esta estrategia solo lee self.ticker.
-  - Warmup (rediseñado en Fase 3.5 a partir de feedback): en vez de dejar
-    al rol técnico sin funcionar durante los primeros ~50 días reales de
-    cada backtest, el runner (Fase 3.6) debe cargar el dataset ~50
-    sesiones ANTES de la fecha real de evaluación (vía
-    load_backtest_data_single_ticker con un start_date anterior). Esta
-    clase recibe explícitamente evaluation_start_date: acumula OHLCV/
-    noticias desde el primer día cargado, pero NO llama al orquestador ni
-    opera hasta date >= evaluation_start_date. Así, el primer día real de
-    evaluación ya tiene indicadores técnicos completos, sin operar
-    "a ciegas" durante el preload ni contaminar el periodo de test con
-    decisiones tomadas fuera de la ventana experimental (Fase 1.2).
-  - Precios: today_data["price"][ticker] trae campos crudos (open/high/
-    low/close) y ajustados por splits/dividendos (adjusted_open/adjusted_
-    high/adjusted_low/adjusted_close). La ejecución real de órdenes usa
-    los ajustados (_execute_order usa price_field="adjusted_open" para
-    fills a next-open, confirmado en backtest_framework_iso.py). Para
-    consistencia, los indicadores técnicos y el precio de referencia
-    pasado a framework.buy()/.sell() usan también los campos ajustados.
+  - Warmup (rediseñado en Fase 3.5 a partir de feedback): el runner
+    (Fase 3.6) carga el dataset ~50 sesiones ANTES de la fecha real de
+    evaluación. Esta clase recibe explícitamente evaluation_start_date:
+    acumula OHLCV/noticias desde el primer día cargado, pero NO llama al
+    orquestador ni opera hasta date >= evaluation_start_date (Fase 1.2).
+  - Precios: los indicadores técnicos y el precio de referencia pasado a
+    framework.buy()/.sell() usan los campos ajustados (adjusted_*), igual
+    que la ejecución real de órdenes (fill a next-open contra
+    adjusted_open, confirmado en backtest_framework_iso.py).
   - Bug de coste (Fase 0.4) corregido de verdad en Fase 3.5: ver
-    llm/call_llm.py -- el parche de OPENAI_PRICE por sí solo no bastaba.
+    llm/call_llm.py.
+
+Fase 4.1 -- recuperación ante fallos (pausa/reanudación con replay):
+  - FINSABER NO captura excepciones de on_data() (verificado en el código
+    fuente de finsaber==2.0.1: la llamada strategy.on_data(...) en
+    backtest_framework_iso.py no está rodeada por ningún try/except, y los
+    except de finsaber.py solo cubren InsufficientTrainingDataException y
+    (AttributeError, IndexError) en otros puntos). Una excepción lanzada
+    aquí sale de framework.run() y de run_iterative_tickers().
+  - Si un día falla (el orquestador devuelve status "failed"), se registra
+    en <run_log_dir>/failures.jsonl (con los informes parciales, que NO se
+    reutilizan) y se lanza DayFailure. Tras el primer fallo la instancia
+    queda "abortada": cualquier on_data() posterior relanza el error sin
+    llamar al LLM (defensa extra por si el comportamiento de FINSABER
+    cambiase en otra versión).
+  - Cada día completado con éxito se añade a
+    <run_log_dir>/<setup>__<ticker>.days.jsonl (informes de analista +
+    decisión del trader + estado de posición). Este fichero es el
+    registro de outputs por ticker, rol y fecha, y la fuente del replay.
+  - run_backtest.run_with_recovery() relanza el (config, ticker) desde el
+    principio con attempt+1. Los días ya presentes en el log se
+    REPRODUCEN sin llamar al LLM: FINSABER reconstruye cartera y órdenes
+    con la decisión guardada. Desde el día fallido se llama al LLM de
+    nuevo. Se comprueba que la posición en el replay coincide con la
+    guardada; si no, se aborta (divergencia).
 """
 
 from __future__ import annotations
 
+import json
 import logging
+import os
+from pathlib import Path
 
 import pandas as pd
 from finsaber.strategy.timing_llm import BaseStrategyIso
 
+from llm.call_llm import set_call_context
 from strategy.orchestrator import run_configuration
 
 logger = logging.getLogger(__name__)
 
 MIN_OHLCV_HISTORY_FOR_TECHNICAL = 50  # SMA50/ATR14 (Fase 2.1)
+
+
+class DayFailure(Exception):
+    """Un día no pudo completarse (agente sin respuesta válida)."""
+
+    def __init__(self, date, failed_role, setup_name, ticker):
+        self.date = pd.Timestamp(date)
+        self.failed_role = failed_role
+        self.setup_name = setup_name
+        self.ticker = ticker
+        super().__init__(
+            f"{setup_name}/{ticker}: fallo el {self.date.date()} (rol: {failed_role})"
+        )
+
+
+def days_log_path(run_log_dir: str | Path, setup_name: str, ticker: str) -> Path:
+    return Path(run_log_dir) / f"{setup_name}__{ticker}.days.jsonl"
+
+
+def failures_log_path(run_log_dir: str | Path) -> Path:
+    return Path(run_log_dir) / "failures.jsonl"
+
+
+def jsonl_append(path: Path, record: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(json.dumps(record, ensure_ascii=False, default=str) + "\n")
+        f.flush()
+        os.fsync(f.fileno())
+
+
+def jsonl_read(path: Path) -> list[dict]:
+    if not path.exists():
+        return []
+    out = []
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                out.append(json.loads(line))
+    return out
 
 
 class AblationStrategy(BaseStrategyIso):
@@ -72,21 +132,34 @@ class AblationStrategy(BaseStrategyIso):
         active_roles: list[str],
         ticker: str,
         evaluation_start_date: pd.Timestamp,
+        run_log_dir: str | None = None,
+        attempt: int = 1,
     ):
         super().__init__()
         self.setup_name = setup_name
         self.active_roles = active_roles
         self.ticker = ticker
         self.evaluation_start_date = pd.Timestamp(evaluation_start_date)
+        self.run_log_dir = Path(run_log_dir) if run_log_dir else None
+        self.attempt = attempt
 
         self._ohlcv_rows: list[dict] = []
         self._news_rows: list[dict] = []
 
+        self._failure: DayFailure | None = None
+        self._replay: dict[str, dict] = {}
+        if self.run_log_dir is not None:
+            records = jsonl_read(days_log_path(self.run_log_dir, setup_name, ticker))
+            self._replay = {r["date"]: r for r in records if r.get("status") == "ok"}
+            if self._replay:
+                logger.info(
+                    "%s/%s (intento %d): %d días disponibles para replay",
+                    setup_name, ticker, attempt, len(self._replay),
+                )
+
     # -- Acumulación de buffers -------------------------------------------------
 
     def _append_price(self, date: pd.Timestamp, price_row: dict) -> None:
-        # Campos ajustados (splits/dividendos), consistentes con los que
-        # usa el framework para ejecutar las órdenes de verdad.
         self._ohlcv_rows.append(
             {
                 "date": date,
@@ -107,8 +180,6 @@ class AblationStrategy(BaseStrategyIso):
         return df.set_index("date").sort_index()
 
     def _news_items(self) -> pd.DataFrame:
-        # select_news() (agents/_common.py) espera columnas date/news_text
-        # y filtra por ventana; symbol ya viene fijado a self.ticker.
         return pd.DataFrame(self._news_rows, columns=["date", "symbol", "news_text"])
 
     # -- Estado de posición (Fase 2.4: leído del framework, no inventado) -------
@@ -140,18 +211,45 @@ class AblationStrategy(BaseStrategyIso):
             quantity = int(size * held)
             if quantity > 0:
                 framework.sell(date, self.ticker, price, quantity)
-        # action == "hold": no-op. _resolve_quantity de FINSABER-2 también
-        # resuelve de forma segura cualquier orden redundante a quantity=0
-        # (comprobado en Fase 2.4), pero no dependemos de ello aquí.
+        # action == "hold": no-op.
+
+    # -- Fallos (Fase 4.1) ------------------------------------------------------
+
+    def _forced_failure(self, date: pd.Timestamp) -> bool:
+        """
+        Hook SOLO para probar el bucle de recuperación: con
+        TFM_FORCE_FAIL_DATE=YYYY-MM-DD, ese día falla en los primeros
+        TFM_FORCE_FAIL_ATTEMPTS intentos (por defecto 1).
+        """
+        forced = os.environ.get("TFM_FORCE_FAIL_DATE")
+        if not forced or date.strftime("%Y-%m-%d") != forced:
+            return False
+        return self.attempt <= int(os.environ.get("TFM_FORCE_FAIL_ATTEMPTS", "1"))
+
+    def _fail(self, date: pd.Timestamp, failed_role: str, partial_reports) -> None:
+        self._failure = DayFailure(date, failed_role, self.setup_name, self.ticker)
+        if self.run_log_dir is not None:
+            jsonl_append(
+                failures_log_path(self.run_log_dir),
+                {
+                    "setup": self.setup_name,
+                    "ticker": self.ticker,
+                    "date": date.strftime("%Y-%m-%d"),
+                    "attempt": self.attempt,
+                    "failed_role": failed_role,
+                    "partial_reports": partial_reports,
+                },
+            )
+        logger.warning("%s", self._failure)
+        raise self._failure
 
     # -- Callback principal -------------------------------------------------
 
     def on_data(self, date, today_data: dict, framework) -> None:
-        # FINSABER-2 itera date_range con objetos datetime.date, no
-        # pd.Timestamp (verificado en vivo, Fase 3.5) -- se normaliza aquí
-        # una vez para que el resto de la clase (buffers, comparación con
-        # evaluation_start_date, .date() en los prompts de los agentes)
-        # trabaje siempre con pd.Timestamp.
+        if self._failure is not None:
+            raise self._failure
+
+        # FINSABER-2 itera con datetime.date; se normaliza a pd.Timestamp.
         date = pd.Timestamp(date)
 
         price_row = today_data.get("price", {}).get(self.ticker)
@@ -163,18 +261,12 @@ class AblationStrategy(BaseStrategyIso):
         self._append_news(date, today_data.get("news", {}).get(self.ticker, []))
 
         if date < self.evaluation_start_date:
-            # Preload: acumula buffers pero no opera. El runner (Fase 3.6)
-            # es responsable de cargar suficientes sesiones previas para
-            # que, en evaluation_start_date, ohlcv_history ya tenga >=
-            # MIN_OHLCV_HISTORY_FOR_TECHNICAL filas si el rol técnico está activo.
+            # Preload: acumula buffers pero no opera.
             return
 
         ohlcv_history = self._ohlcv_history()
 
         if "technical" in self.active_roles and len(ohlcv_history) < MIN_OHLCV_HISTORY_FOR_TECHNICAL:
-            # No debería ocurrir si el runner precargó suficiente historia;
-            # si ocurre, es una configuración incorrecta del preload, no un
-            # warmup esperado -- se loguea como warning, no debug.
             logger.warning(
                 "%s/%s: %d/%d sesiones en evaluation_start_date (%s) -- "
                 "preload insuficiente, revisar runner de Fase 3.6",
@@ -183,8 +275,30 @@ class AblationStrategy(BaseStrategyIso):
             )
             return
 
-        news_items = self._news_items()
         position_state = self._position_state(framework)
+        date_key = date.strftime("%Y-%m-%d")
+        ref_price = price_row["adjusted_close"]
+
+        # -- Replay: día ya completado en un intento anterior --------------
+        replayed = self._replay.get(date_key)
+        if replayed is not None:
+            if replayed.get("position_state") != position_state:
+                raise RuntimeError(
+                    f"{self.setup_name}/{self.ticker} {date_key}: divergencia en replay "
+                    f"(posición guardada={replayed.get('position_state')!r}, "
+                    f"actual={position_state!r})"
+                )
+            self._execute_decision(replayed["trader_output"], date, framework, ref_price)
+            return
+
+        # -- Día nuevo: llamada real a los agentes --------------------------
+        if self._forced_failure(date):
+            self._fail(date, "forced_test", None)
+
+        # Contexto para el log de llamadas (tokens/coste por llamada).
+        set_call_context(
+            setup=self.setup_name, ticker=self.ticker, date=date_key, attempt=self.attempt
+        )
 
         result = run_configuration(
             self.setup_name,
@@ -192,15 +306,24 @@ class AblationStrategy(BaseStrategyIso):
             date,
             self.ticker,
             ohlcv_history,
-            news_items,
+            self._news_items(),
             position_state,
         )
 
         if result.status == "failed":
-            logger.warning(
-                "%s/%s: día %s marcado como fallido (rol: %s)",
-                self.setup_name, self.ticker, date, result.failed_role,
-            )
-            return
+            self._fail(date, str(result.failed_role), result.analyst_reports)
 
-        self._execute_decision(result.trader_output, date, framework, price_row["adjusted_close"])
+        if self.run_log_dir is not None:
+            jsonl_append(
+                days_log_path(self.run_log_dir, self.setup_name, self.ticker),
+                {
+                    "date": date_key,
+                    "status": "ok",
+                    "attempt": self.attempt,
+                    "position_state": position_state,
+                    "analyst_reports": result.analyst_reports,
+                    "trader_output": result.trader_output,
+                },
+            )
+
+        self._execute_decision(result.trader_output, date, framework, ref_price)
