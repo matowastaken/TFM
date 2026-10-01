@@ -95,6 +95,8 @@ def main():
     ap.add_argument("--eval-end", default="2025-01-31")
     ap.add_argument("--preload-days", type=int, default=50)
     ap.add_argument("--max-cost", type=float, default=10.0)
+    ap.add_argument("--show-figures", action="store_true",
+                    help="Abrir también la equity curve en ventana NO bloqueante (siempre se guarda el PNG)")
     ap.add_argument("--dry-run", action="store_true")
     args = ap.parse_args()
 
@@ -123,6 +125,7 @@ def main():
     pending = [(s, t) for s, t in pairs if not marker(s, t).exists()]
     print(f"Periodo: {args.eval_start} -> {args.eval_end} (preload {args.preload_days})")
     print(f"Logs: {run_log_dir}")
+    print(f"Figuras: {results_dir / '_figures'} ({'+ ventana no bloqueante' if args.show_figures else 'solo PNG, sin ventanas'})")
     print(f"Pares totales: {len(pairs)} | completados: {len(pairs) - len(pending)} | pendientes: {len(pending)}")
     for s, t in pairs:
         print(f"  [{'HECHO' if marker(s, t).exists() else 'pend.'}] {t:5s} {s}")
@@ -147,6 +150,7 @@ def main():
                 preload_days=args.preload_days,
                 run_log_dir=run_log_dir,
                 resume=True,  # R5
+                show_figures=args.show_figures,
             )
         except ManualReviewRequired as e:  # R6
             print(f"\nREVISIÓN MANUAL REQUERIDA en {setup}/{ticker}: {e}", file=sys.stderr)
