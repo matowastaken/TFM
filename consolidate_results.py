@@ -19,6 +19,11 @@ Decisiones:
 
 Uso:
   python consolidate_results.py --results C:\\finsaber-data\\results --out analysis\\consolidated
+  # Réplica (Fase 5.1): sin baseline ni buy-and-hold, con etiqueta de ejecución
+  python consolidate_results.py --results C:\\finsaber-data\\results_rep2 --out analysis\\replicas\\rep2 \\
+      --setups full_system no_technical no_sentiment no_fundamental --label rep2
+
+Siempre se pasa --out explícito: el valor por defecto NO debe usarse para no pisar analysis\\consolidated.
 """
 import argparse
 import json
@@ -74,8 +79,17 @@ def main():
     ap.add_argument("--out", default="analysis/consolidated")
     ap.add_argument("--eval-start", default="2024-08-01")
     ap.add_argument("--calls", default=None, help="por defecto <results>/_run_logs/calls.jsonl")
+    ap.add_argument("--setups", nargs="+", default=SETUPS,
+                    help="configuraciones a consolidar (por defecto las 5). Debe incluir full_system")
+    ap.add_argument("--label", default="", help="etiqueta de ejecución; se añade como columna 'run'")
     args = ap.parse_args()
 
+    setups = args.setups
+    if "full_system" not in setups:
+        raise SystemExit("--setups debe incluir full_system (referencia de los deltas)")
+    unknown = [s for s in setups if s not in SETUPS]
+    if unknown:
+        raise SystemExit(f"setups desconocidos: {unknown}. Válidos: {SETUPS}")
     results = Path(args.results)
     out = Path(args.out)
     (out / "figures").mkdir(parents=True, exist_ok=True)
@@ -86,7 +100,7 @@ def main():
 
     rows, curves = [], {}
     for ticker in TICKERS:
-        for setup in SETUPS + [BH]:
+        for setup in setups + [BH]:
             d = find_pair_dir(results, setup, ticker)
             if d is None:
                 if setup != BH:
@@ -109,7 +123,9 @@ def main():
             curves[(setup, ticker)] = eq
 
     df = pd.DataFrame(rows)
-    cols = ["setup", "ticker", "days", "total_return", "annual_return", "annual_volatility", "sharpe",
+    if args.label:
+        df.insert(0, "run", args.label)
+    cols = (["run"] if args.label else []) + ["setup", "ticker", "days", "total_return", "annual_return", "annual_volatility", "sharpe",
             "sortino", "max_drawdown", "calmar", "n_trades", "commission", "llm_calls", "llm_cost_usd",
             "final_value", "finsaber_total_return", "finsaber_sharpe"]
     df = df[cols]
@@ -119,11 +135,11 @@ def main():
     diff = (df["total_return"] - df["finsaber_total_return"]).abs().max()
     print(f"Control total_return recalculado vs FINSABER: max|diff| = {diff:.2e}")
 
-    abl = df[df["setup"].isin(SETUPS)]
+    abl = df[df["setup"].isin(setups)]
     metrics = ["total_return", "annual_return", "sharpe", "calmar", "max_drawdown", "n_trades", "llm_cost_usd"]
 
     # Promedio entre tickers por configuración
-    summary = abl.groupby("setup")[metrics].mean().reindex(SETUPS)
+    summary = abl.groupby("setup")[metrics].mean().reindex(setups)
     summary.to_csv(out / "summary_by_config.csv")
 
     # Deltas vs full_system (global y por ticker)
@@ -136,7 +152,7 @@ def main():
     deltas(summary).to_csv(out / "deltas_vs_full_global.csv")
     per_t = []
     for t in TICKERS:
-        s = abl[abl.ticker == t].set_index("setup")[metrics].reindex(SETUPS)
+        s = abl[abl.ticker == t].set_index("setup")[metrics].reindex(setups)
         dd = deltas(s); dd.insert(0, "ticker", t); per_t.append(dd.reset_index())
     pd.concat(per_t).to_csv(out / "deltas_vs_full_by_ticker.csv", index=False)
 
@@ -149,7 +165,7 @@ def main():
               "no_sentiment": "#2ca02c", "no_fundamental": "#ff7f0e", BH: "#000000"}
     for t in TICKERS:
         fig, ax = plt.subplots(figsize=(10, 5.5))
-        for s in SETUPS + [BH]:
+        for s in setups + [BH]:
             if (s, t) in curves:
                 c = curves[(s, t)]
                 ax.plot(c.index, c.values / c.iloc[0] * 100, label=s, color=colors[s],
