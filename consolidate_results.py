@@ -18,7 +18,7 @@ Decisiones:
     para ratios, nº de operaciones y coste.
 
 Uso:
-  python consolidate_results.py --results C:\\finsaber-data\\results --out consolidated
+  python consolidate_results.py --results C:\\finsaber-data\\results --out analysis\\consolidated
 """
 import argparse
 import json
@@ -71,7 +71,7 @@ def load_equity(pair_dir: Path, eval_start: str) -> pd.Series:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--results", required=True)
-    ap.add_argument("--out", default="consolidated")
+    ap.add_argument("--out", default="analysis/consolidated")
     ap.add_argument("--eval-start", default="2024-08-01")
     ap.add_argument("--calls", default=None, help="por defecto <results>/_run_logs/calls.jsonl")
     args = ap.parse_args()

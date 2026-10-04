@@ -7,3 +7,5 @@ __pycache__/
 .pytest_cache/
 results/
 .vscode/
+Fase*/
+cronograma_tfm_ablacion_multiagente.md
