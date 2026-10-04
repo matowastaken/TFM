@@ -138,7 +138,7 @@ Single run per configuration (LLM non-determinism not averaged), 4 assets, 6 mon
 **Pablo Prol Prieto** · Master's in Artificial Intelligence, UAX
 Supervisor: Dr. Juan Agustín Fraile Nieto
 
-[GitHub](https://github.com/matowastaken) · [LinkedIn](https://www.linkedin.com/in/TU-PERFIL) · [Email](mailto:TU-EMAIL)
+[GitHub](https://github.com/matowastaken) · [LinkedIn](https://www.linkedin.com/in/pablo-prol-prieto) · [Email](mailto:pabloprolprieto.ppp@gmail.com)
 
 ---
 
