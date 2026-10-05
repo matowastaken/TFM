@@ -1,0 +1,4 @@
+run,pares_en_summary,pares_comparables,attempts_max,dias_min,dias_max,fallos_dia,ordenes_rechazadas,coste_usd_comparables,coste_usd_total,minutos_reloj
+rep1,20,16,1,126,126,0,0,3.426871,3.543421,228.87999999999997
+rep2,16,16,1,126,126,0,0,3.427711,3.427711,157.46
+rep3,16,16,1,126,126,0,0,3.428119,3.428119,157.38833333333332

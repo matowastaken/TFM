@@ -1,0 +1,13 @@
+role,ticker,dias_en_alguna,dias_en_2_o_mas,dias_en_las_3
+fundamental,JNJ,9,2,1
+fundamental,JPM,8,3,1
+fundamental,NVDA,2,1,0
+fundamental,XOM,21,9,2
+sentiment,JNJ,17,4,2
+sentiment,JPM,5,2,1
+sentiment,NVDA,4,1,1
+sentiment,XOM,18,7,3
+technical,JNJ,13,6,4
+technical,JPM,3,2,0
+technical,NVDA,2,1,1
+technical,XOM,10,6,2

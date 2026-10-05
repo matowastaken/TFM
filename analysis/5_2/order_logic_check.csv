@@ -1,0 +1,5 @@
+setup,compras,compras_estando_en_posicion,ventas,ventas_sin_posicion
+full_system,48,0,88,0
+no_fundamental,40,0,112,0
+no_sentiment,31,0,92,0
+no_technical,40,0,81,0

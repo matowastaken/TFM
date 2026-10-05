@@ -1,0 +1,252 @@
+ticker,setup,date,action,n_runs,sizes
+JNJ,full_system,2024-08-01,buy,3,[0.3]
+JNJ,no_fundamental,2024-08-01,buy,3,[0.4]
+JNJ,no_sentiment,2024-08-01,buy,3,[0.4]
+JNJ,no_technical,2024-08-06,buy,3,[0.5]
+JNJ,full_system,2024-08-15,sell,3,"[0.5, 1.0]"
+JNJ,no_fundamental,2024-08-15,sell,1,[0.5]
+JNJ,no_sentiment,2024-08-15,sell,2,[0.5]
+JNJ,no_technical,2024-08-15,sell,3,[1.0]
+JNJ,full_system,2024-08-19,buy,2,"[0.4, 0.5]"
+JNJ,no_technical,2024-08-19,buy,3,[0.5]
+JNJ,full_system,2024-09-05,sell,1,[1.0]
+JNJ,no_sentiment,2024-09-05,sell,2,[0.5]
+JNJ,no_technical,2024-09-05,sell,2,[1.0]
+JNJ,full_system,2024-09-09,buy,1,[0.5]
+JNJ,no_technical,2024-09-09,buy,2,"[0.3, 0.4]"
+JNJ,full_system,2024-09-23,sell,3,[1.0]
+JNJ,no_fundamental,2024-09-23,sell,3,[1.0]
+JNJ,no_sentiment,2024-09-23,sell,3,"[0.5, 1.0]"
+JNJ,no_technical,2024-09-23,sell,3,[0.5]
+JNJ,no_sentiment,2024-09-24,sell,1,[0.5]
+JNJ,no_technical,2024-09-24,sell,3,"[0.5, 1.0]"
+JNJ,full_system,2024-09-27,buy,3,"[0.3, 0.4]"
+JNJ,no_fundamental,2024-09-27,buy,3,[0.4]
+JNJ,no_sentiment,2024-09-27,buy,1,[0.4]
+JNJ,no_technical,2024-09-27,buy,2,"[0.3, 0.4]"
+JNJ,no_sentiment,2024-09-30,buy,1,[0.4]
+JNJ,full_system,2024-10-04,sell,3,[0.5]
+JNJ,no_fundamental,2024-10-04,sell,3,"[0.5, 1.0]"
+JNJ,no_sentiment,2024-10-04,sell,1,[0.5]
+JNJ,full_system,2024-10-07,sell,2,[0.5]
+JNJ,no_fundamental,2024-10-07,sell,2,"[0.5, 1.0]"
+JNJ,full_system,2024-10-08,sell,3,[0.5]
+JNJ,no_fundamental,2024-10-08,sell,1,[1.0]
+JNJ,no_sentiment,2024-10-08,sell,2,[0.5]
+JNJ,no_fundamental,2024-10-15,buy,3,[0.6]
+JNJ,no_sentiment,2024-10-31,sell,1,[0.5]
+JNJ,no_fundamental,2024-11-05,sell,1,[0.5]
+JNJ,no_sentiment,2024-11-05,sell,1,[0.5]
+JNJ,no_sentiment,2024-11-08,sell,1,[0.5]
+JNJ,no_fundamental,2024-11-11,sell,1,[0.5]
+JNJ,no_fundamental,2024-11-12,sell,1,[0.5]
+JNJ,no_sentiment,2024-11-12,sell,1,[0.5]
+JNJ,full_system,2024-11-13,sell,1,[0.5]
+JNJ,no_fundamental,2024-11-13,sell,2,[0.5]
+JNJ,full_system,2024-11-14,sell,3,[1.0]
+JNJ,no_fundamental,2024-11-14,sell,3,[1.0]
+JNJ,no_sentiment,2024-11-14,sell,3,"[0.5, 1.0]"
+JNJ,no_technical,2024-11-14,sell,3,[1.0]
+JNJ,full_system,2024-11-18,buy,1,[0.3]
+JNJ,no_technical,2024-11-18,buy,3,"[0.3, 0.4]"
+JNJ,full_system,2024-11-19,sell,1,[0.5]
+JNJ,no_sentiment,2024-11-19,sell,1,[1.0]
+JNJ,full_system,2024-11-20,sell,1,[1.0]
+JNJ,no_technical,2024-11-20,sell,2,[0.5]
+JNJ,full_system,2024-11-25,buy,3,[0.3]
+JNJ,no_fundamental,2024-11-25,buy,3,[0.3]
+JNJ,no_sentiment,2024-11-26,buy,3,"[0.3, 0.4]"
+JNJ,no_fundamental,2024-12-04,sell,1,[0.5]
+JNJ,full_system,2024-12-13,sell,3,"[0.5, 1.0]"
+JNJ,no_fundamental,2024-12-13,sell,3,[0.5]
+JNJ,no_sentiment,2024-12-13,sell,3,[0.5]
+JNJ,no_technical,2024-12-13,sell,3,[0.5]
+JNJ,full_system,2024-12-16,sell,1,[0.5]
+JNJ,no_fundamental,2024-12-16,sell,3,[0.5]
+JNJ,no_technical,2024-12-16,sell,1,[0.5]
+JNJ,full_system,2024-12-17,sell,1,[0.5]
+JNJ,no_fundamental,2024-12-17,sell,2,[0.5]
+JNJ,no_sentiment,2024-12-17,sell,2,[0.5]
+JNJ,no_technical,2024-12-17,sell,3,[0.5]
+JNJ,full_system,2024-12-18,sell,1,[0.5]
+JNJ,no_fundamental,2024-12-18,sell,3,"[0.5, 1.0]"
+JNJ,no_sentiment,2024-12-18,sell,3,"[0.5, 1.0]"
+JNJ,no_technical,2024-12-18,sell,3,"[0.5, 1.0]"
+JNJ,full_system,2024-12-19,sell,1,[0.5]
+JNJ,no_fundamental,2024-12-19,sell,1,[1.0]
+JNJ,no_technical,2024-12-19,sell,1,[0.5]
+JNJ,full_system,2024-12-20,sell,1,[0.5]
+JNJ,no_sentiment,2024-12-20,sell,1,[0.5]
+JNJ,no_sentiment,2024-12-27,sell,1,[0.5]
+JNJ,no_technical,2024-12-31,buy,1,[0.4]
+JNJ,full_system,2025-01-03,sell,1,[0.5]
+JNJ,full_system,2025-01-07,buy,2,[0.5]
+JNJ,no_fundamental,2025-01-07,buy,3,"[0.4, 0.5]"
+JNJ,no_sentiment,2025-01-07,buy,1,[0.4]
+JPM,full_system,2024-08-01,buy,3,[0.4]
+JPM,no_technical,2024-08-01,buy,3,[0.5]
+JPM,no_fundamental,2024-08-06,buy,1,[0.3]
+JPM,no_fundamental,2024-08-07,sell,1,[0.5]
+JPM,no_fundamental,2024-08-14,buy,2,[0.4]
+JPM,no_sentiment,2024-08-14,buy,3,"[0.3, 0.4]"
+JPM,full_system,2024-09-06,sell,2,[0.5]
+JPM,no_fundamental,2024-09-06,sell,1,[0.5]
+JPM,no_sentiment,2024-09-06,sell,2,[0.5]
+JPM,full_system,2024-09-10,sell,2,[0.5]
+JPM,no_fundamental,2024-09-10,sell,3,[0.5]
+JPM,no_sentiment,2024-09-10,sell,3,[0.5]
+JPM,no_fundamental,2024-09-11,sell,2,[0.5]
+JPM,no_sentiment,2024-09-13,sell,1,[0.5]
+JPM,full_system,2024-10-02,sell,3,[1.0]
+JPM,no_fundamental,2024-10-02,sell,2,"[0.5, 1.0]"
+JPM,no_sentiment,2024-10-02,sell,3,"[0.5, 0.6]"
+JPM,no_technical,2024-10-02,sell,3,[0.5]
+JPM,no_fundamental,2024-10-03,sell,2,[0.5]
+JPM,no_sentiment,2024-10-03,sell,3,"[0.5, 1.0]"
+JPM,no_technical,2024-10-03,sell,2,[0.5]
+JPM,full_system,2024-10-04,buy,2,[0.3]
+JPM,no_fundamental,2024-10-04,buy,1,[0.3]
+JPM,no_sentiment,2024-10-04,buy,1,[0.4]
+JPM,full_system,2024-10-09,buy,1,[0.4]
+JPM,no_fundamental,2024-12-17,sell,1,[0.5]
+JPM,full_system,2024-12-18,sell,1,[0.5]
+JPM,no_fundamental,2024-12-18,sell,3,[0.5]
+JPM,no_sentiment,2024-12-18,sell,1,[0.5]
+NVDA,full_system,2024-08-01,buy,3,"[0.4, 0.5]"
+NVDA,no_fundamental,2024-08-01,buy,2,"[0.3, 0.4]"
+NVDA,no_technical,2024-08-01,buy,3,[0.6]
+NVDA,full_system,2024-08-02,sell,3,[1.0]
+NVDA,no_fundamental,2024-08-02,sell,2,[1.0]
+NVDA,no_technical,2024-08-02,sell,3,[1.0]
+NVDA,full_system,2024-08-14,buy,3,[0.6]
+NVDA,no_fundamental,2024-08-14,buy,3,"[0.5, 0.6]"
+NVDA,no_sentiment,2024-08-14,buy,3,[0.6]
+NVDA,no_technical,2024-08-14,buy,3,"[0.5, 0.6]"
+NVDA,full_system,2024-08-29,sell,3,[0.5]
+NVDA,no_fundamental,2024-08-29,sell,3,"[0.5, 1.0]"
+NVDA,no_sentiment,2024-08-29,sell,2,[0.5]
+NVDA,no_technical,2024-08-29,sell,3,[0.5]
+NVDA,full_system,2024-09-03,sell,3,[0.5]
+NVDA,no_fundamental,2024-09-03,sell,2,[0.5]
+NVDA,no_sentiment,2024-09-03,sell,2,"[0.5, 1.0]"
+NVDA,no_technical,2024-09-03,sell,2,"[0.5, 1.0]"
+NVDA,full_system,2024-09-04,sell,3,[1.0]
+NVDA,no_fundamental,2024-09-04,sell,2,[1.0]
+NVDA,no_sentiment,2024-09-04,sell,2,[1.0]
+NVDA,no_technical,2024-09-04,sell,2,[1.0]
+NVDA,full_system,2024-09-12,buy,3,[0.3]
+NVDA,no_fundamental,2024-09-12,buy,3,[0.3]
+NVDA,no_sentiment,2024-09-12,buy,3,"[0.3, 0.4]"
+NVDA,no_technical,2024-09-16,buy,3,[0.6]
+NVDA,no_fundamental,2024-10-30,sell,2,[0.5]
+NVDA,full_system,2024-12-09,sell,3,"[0.5, 1.0]"
+NVDA,no_fundamental,2024-12-09,sell,3,"[0.5, 1.0]"
+NVDA,no_sentiment,2024-12-09,sell,2,[0.5]
+NVDA,no_technical,2024-12-09,sell,3,[0.5]
+NVDA,full_system,2024-12-11,buy,1,[0.5]
+NVDA,no_fundamental,2024-12-11,buy,2,[0.4]
+NVDA,full_system,2025-01-13,sell,3,[1.0]
+NVDA,no_fundamental,2025-01-13,sell,3,[0.5]
+NVDA,no_sentiment,2025-01-13,sell,3,[1.0]
+NVDA,no_technical,2025-01-13,sell,3,"[0.5, 1.0]"
+NVDA,full_system,2025-01-15,buy,3,[0.5]
+NVDA,no_sentiment,2025-01-15,buy,3,[0.4]
+NVDA,no_technical,2025-01-15,buy,1,[0.6]
+NVDA,full_system,2025-01-29,sell,3,[1.0]
+NVDA,no_fundamental,2025-01-29,sell,3,[1.0]
+NVDA,no_sentiment,2025-01-29,sell,3,[1.0]
+NVDA,no_technical,2025-01-29,sell,3,"[0.5, 1.0]"
+XOM,full_system,2024-08-02,buy,3,[0.4]
+XOM,no_fundamental,2024-08-02,buy,3,[0.5]
+XOM,no_technical,2024-08-02,buy,3,"[0.4, 0.5]"
+XOM,no_sentiment,2024-08-09,buy,3,[0.3]
+XOM,no_technical,2024-08-09,sell,3,[0.5]
+XOM,full_system,2024-08-13,sell,3,[0.5]
+XOM,no_fundamental,2024-08-13,sell,1,[0.5]
+XOM,no_sentiment,2024-08-13,sell,2,[0.5]
+XOM,no_technical,2024-08-13,sell,3,"[0.5, 1.0]"
+XOM,no_technical,2024-08-19,buy,2,"[0.3, 0.5]"
+XOM,no_fundamental,2024-08-20,sell,1,[0.5]
+XOM,full_system,2024-09-03,sell,1,[0.5]
+XOM,no_fundamental,2024-09-03,sell,2,[0.5]
+XOM,no_technical,2024-09-03,sell,1,[0.5]
+XOM,no_sentiment,2024-09-06,sell,1,[0.5]
+XOM,full_system,2024-09-10,sell,3,"[0.5, 1.0]"
+XOM,no_fundamental,2024-09-10,sell,3,"[0.5, 1.0]"
+XOM,no_sentiment,2024-09-10,sell,3,"[0.6, 1.0]"
+XOM,no_technical,2024-09-10,sell,3,[0.5]
+XOM,full_system,2024-09-11,sell,1,[1.0]
+XOM,no_fundamental,2024-09-11,sell,1,[1.0]
+XOM,no_sentiment,2024-09-11,sell,1,[1.0]
+XOM,no_technical,2024-09-11,sell,3,"[0.5, 1.0]"
+XOM,no_technical,2024-09-12,sell,1,[1.0]
+XOM,no_technical,2024-09-18,buy,1,[0.3]
+XOM,full_system,2024-09-19,buy,2,[0.3]
+XOM,no_fundamental,2024-09-19,buy,3,"[0.3, 0.4]"
+XOM,no_sentiment,2024-09-19,buy,3,[0.3]
+XOM,full_system,2024-09-20,buy,1,[0.5]
+XOM,no_technical,2024-09-20,buy,2,[0.5]
+XOM,full_system,2024-09-26,sell,3,[0.5]
+XOM,no_sentiment,2024-09-26,sell,3,[0.5]
+XOM,no_technical,2024-10-09,sell,1,[0.5]
+XOM,no_fundamental,2024-10-18,sell,1,[0.5]
+XOM,full_system,2024-10-28,sell,3,"[0.5, 1.0]"
+XOM,no_fundamental,2024-10-28,sell,1,[0.5]
+XOM,no_sentiment,2024-10-28,sell,1,[0.5]
+XOM,no_technical,2024-10-28,sell,3,[0.5]
+XOM,full_system,2024-10-29,sell,2,[1.0]
+XOM,no_fundamental,2024-10-29,sell,3,[0.5]
+XOM,no_sentiment,2024-10-29,sell,3,"[0.5, 1.0]"
+XOM,no_technical,2024-10-29,sell,3,"[0.5, 1.0]"
+XOM,no_fundamental,2024-10-30,sell,3,"[0.5, 1.0]"
+XOM,no_sentiment,2024-10-30,sell,1,[0.5]
+XOM,no_technical,2024-10-30,sell,1,[0.5]
+XOM,full_system,2024-11-01,buy,3,"[0.3, 0.4]"
+XOM,no_technical,2024-11-01,buy,1,[0.6]
+XOM,no_fundamental,2024-11-04,buy,1,[0.5]
+XOM,no_sentiment,2024-11-04,buy,1,[0.5]
+XOM,no_fundamental,2024-11-26,sell,3,[0.5]
+XOM,no_sentiment,2024-11-26,sell,2,[0.5]
+XOM,full_system,2024-11-27,sell,2,[0.5]
+XOM,no_fundamental,2024-11-27,sell,1,[0.5]
+XOM,no_sentiment,2024-11-27,sell,1,[0.5]
+XOM,no_fundamental,2024-11-29,sell,2,[0.5]
+XOM,no_fundamental,2024-12-04,sell,2,[0.5]
+XOM,no_sentiment,2024-12-04,sell,1,[0.5]
+XOM,no_fundamental,2024-12-05,sell,1,[0.4]
+XOM,full_system,2024-12-06,sell,1,[0.5]
+XOM,no_fundamental,2024-12-06,sell,3,[0.5]
+XOM,no_sentiment,2024-12-06,sell,1,[0.5]
+XOM,full_system,2024-12-09,sell,2,[0.5]
+XOM,no_fundamental,2024-12-09,sell,2,[0.5]
+XOM,no_sentiment,2024-12-09,sell,2,[0.5]
+XOM,no_fundamental,2024-12-10,sell,2,[0.5]
+XOM,no_sentiment,2024-12-10,sell,3,[0.5]
+XOM,no_sentiment,2024-12-11,sell,1,[0.5]
+XOM,no_sentiment,2024-12-12,sell,1,[0.5]
+XOM,no_fundamental,2024-12-17,sell,1,[0.5]
+XOM,full_system,2024-12-18,sell,3,"[0.5, 1.0]"
+XOM,no_fundamental,2024-12-18,sell,3,"[0.5, 0.6, 1.0]"
+XOM,no_sentiment,2024-12-18,sell,3,[0.5]
+XOM,no_technical,2024-12-18,sell,3,"[0.5, 1.0]"
+XOM,no_sentiment,2024-12-19,sell,1,[0.5]
+XOM,no_fundamental,2024-12-20,sell,1,[0.5]
+XOM,full_system,2024-12-23,buy,2,[0.4]
+XOM,no_technical,2024-12-23,buy,1,[0.6]
+XOM,no_fundamental,2024-12-26,buy,1,[0.3]
+XOM,full_system,2024-12-30,sell,2,[0.5]
+XOM,no_fundamental,2024-12-30,sell,3,[0.5]
+XOM,full_system,2025-01-08,sell,3,[1.0]
+XOM,no_fundamental,2025-01-08,sell,3,[1.0]
+XOM,no_sentiment,2025-01-08,sell,3,"[0.5, 1.0]"
+XOM,no_technical,2025-01-08,sell,3,[1.0]
+XOM,no_sentiment,2025-01-10,sell,1,[0.5]
+XOM,full_system,2025-01-13,buy,3,"[0.3, 0.4]"
+XOM,no_fundamental,2025-01-13,buy,3,"[0.3, 0.4]"
+XOM,no_sentiment,2025-01-13,buy,1,[0.4]
+XOM,no_technical,2025-01-13,buy,3,"[0.3, 0.5]"
+XOM,no_sentiment,2025-01-14,buy,1,[0.4]
+XOM,no_fundamental,2025-01-24,sell,1,[0.5]
+XOM,no_technical,2025-01-27,sell,2,[0.5]
+XOM,no_fundamental,2025-01-28,sell,2,[0.5]
+XOM,no_sentiment,2025-01-31,sell,1,[0.5]
